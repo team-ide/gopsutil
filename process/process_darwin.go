@@ -323,3 +323,11 @@ func callPsWithContext(ctx context.Context, arg string, pid int32, threadOption 
 
 	return ret, nil
 }
+
+func (p *Process) GetFillFromStatWithContext(ctx context.Context) (*FillFromStat, error) {
+	return nil, nil
+}
+
+func (p *Process) GetFillFromStatusWithContext(ctx context.Context) (*FillFromStatus, error) {
+	return nil, nil
+}

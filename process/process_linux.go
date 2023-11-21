@@ -1185,3 +1185,35 @@ func splitProcStat(content []byte) []string {
 	fields = append(fields, restFields...)
 	return fields
 }
+
+func (p *Process) GetFillFromStatWithContext(ctx context.Context) (*FillFromStat, error) {
+	res := &FillFromStat{}
+	var err error
+	res.Terminal, res.Ppid, res.CpuTimes, res.CreateTime, res.RtPriority, res.Nice, res.Faults, err = p.fillFromStatWithContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (p *Process) GetFillFromStatusWithContext(ctx context.Context) (*FillFromStatus, error) {
+	err := p.fillFromStatus()
+	if err != nil {
+		return nil, err
+	}
+	res := &FillFromStatus{
+		Pid:            p.Pid,
+		Name:           p.name,
+		Status:         p.status,
+		Parent:         p.parent,
+		TGid:           p.tgid,
+		UIds:           p.uids,
+		GIds:           p.gids,
+		Groups:         p.groups,
+		NumThreads:     p.numThreads,
+		NumCtxSwitches: p.numCtxSwitches,
+		MemInfo:        p.memInfo,
+		SigInfo:        p.sigInfo,
+	}
+	return res, nil
+}

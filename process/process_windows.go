@@ -1163,3 +1163,11 @@ func convertUTF16ToString(src []byte) string {
 	}
 	return syscall.UTF16ToString(codePoints)
 }
+
+func (p *Process) GetFillFromStatWithContext(ctx context.Context) (*FillFromStat, error) {
+	return nil, nil
+}
+
+func (p *Process) GetFillFromStatusWithContext(ctx context.Context) (*FillFromStatus, error) {
+	return nil, nil
+}

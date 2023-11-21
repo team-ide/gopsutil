@@ -618,3 +618,40 @@ func convertStatusChar(letter string) string {
 		return UnknownState
 	}
 }
+
+type FillFromStat struct {
+	Terminal   uint64
+	Ppid       int32
+	CpuTimes   *cpu.TimesStat
+	CreateTime int64
+	RtPriority uint32
+	Nice       int32
+	Faults     *PageFaultsStat
+}
+
+func (p *Process) GetFillFromStat() (*FillFromStat, error) {
+	return p.GetFillFromStatWithContext(context.Background())
+}
+
+type FillFromStatus struct {
+	Pid            int32 `json:"pid"`
+	Name           string
+	Status         string
+	Parent         int32
+	ParentMutex    sync.RWMutex
+	NumCtxSwitches *NumCtxSwitchesStat
+	UIds           []int32
+	GIds           []int32
+	Groups         []int32
+	NumThreads     int32
+	MemInfo        *MemoryInfoStat
+	SigInfo        *SignalInfoStat
+	CreateTime     int64
+	LastCPUTimes   *cpu.TimesStat
+	LastCPUTime    time.Time
+	TGid           int32
+}
+
+func (p *Process) GetFillFromStatus() (*FillFromStatus, error) {
+	return p.GetFillFromStatusWithContext(context.Background())
+}
