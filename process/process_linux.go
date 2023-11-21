@@ -817,6 +817,9 @@ func (p *Process) fillFromStatus() error {
 
 func (p *Process) fillFromStatusWithContext(ctx context.Context) error {
 	pid := p.Pid
+	if p.FillFromStatusCache != nil {
+		return
+	}
 	statPath := common.HostProcWithContext(ctx, strconv.Itoa(int(pid)), "status")
 	contents, err := os.ReadFile(statPath)
 	if err != nil {
@@ -1008,6 +1011,21 @@ func (p *Process) fillFromStatusWithContext(ctx context.Context) error {
 		}
 
 	}
+
+	p.FillFromStatusCache = &FillFromStatus{
+		Pid:            p.Pid,
+		Name:           p.name,
+		Status:         p.status,
+		Parent:         p.parent,
+		TGid:           p.tgid,
+		UIds:           p.uids,
+		GIds:           p.gids,
+		Groups:         p.groups,
+		NumThreads:     p.numThreads,
+		NumCtxSwitches: p.numCtxSwitches,
+		MemInfo:        p.memInfo,
+		SigInfo:        p.sigInfo,
+	}
 	return nil
 }
 
@@ -1020,6 +1038,10 @@ func (p *Process) fillFromTIDStatWithContext(ctx context.Context, tid int32) (ui
 	var statPath string
 
 	if tid == -1 {
+		if p.FillFromStatCache != nil {
+			return p.FillFromStatCache.Terminal, p.FillFromStatCache.Ppid, p.FillFromStatCache.CpuTimes, p.FillFromStatCache.CreateTime,
+				p.FillFromStatCache.RtPriority, p.FillFromStatCache.Nice, p.FillFromStatCache.Faults, nil
+		}
 		statPath = common.HostProcWithContext(ctx, strconv.Itoa(int(pid)), "stat")
 	} else {
 		statPath = common.HostProcWithContext(ctx, strconv.Itoa(int(pid)), "task", strconv.Itoa(int(tid)), "stat")
@@ -1116,6 +1138,17 @@ func (p *Process) fillFromTIDStatWithContext(ctx context.Context, tid int32) (ui
 		MajorFaults:      majFault,
 		ChildMinorFaults: cMinFault,
 		ChildMajorFaults: cMajFault,
+	}
+	if tid == -1 {
+		p.FillFromStatCache = &FillFromStat{
+			Terminal:   terminal,
+			Ppid:       int32(ppid),
+			CpuTimes:   cpuTimes,
+			CreateTime: createTime,
+			RtPriority: uint32(rtpriority),
+			Nice:       nice,
+			Faults:     faults,
+		}
 	}
 
 	return terminal, int32(ppid), cpuTimes, createTime, uint32(rtpriority), nice, faults, nil

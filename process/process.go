@@ -41,6 +41,9 @@ type Process struct {
 	lastCPUTime  time.Time
 
 	tgid int32
+
+	FillFromStatCache   *FillFromStat
+	FillFromStatusCache *FillFromStatus
 }
 
 // Process status
