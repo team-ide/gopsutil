@@ -818,7 +818,7 @@ func (p *Process) fillFromStatus() error {
 func (p *Process) fillFromStatusWithContext(ctx context.Context) error {
 	pid := p.Pid
 	if p.FillFromStatusCache != nil {
-		return
+		return nil
 	}
 	statPath := common.HostProcWithContext(ctx, strconv.Itoa(int(pid)), "status")
 	contents, err := os.ReadFile(statPath)
@@ -1039,8 +1039,7 @@ func (p *Process) fillFromTIDStatWithContext(ctx context.Context, tid int32) (ui
 
 	if tid == -1 {
 		if p.FillFromStatCache != nil {
-			return p.FillFromStatCache.Terminal, p.FillFromStatCache.Ppid, p.FillFromStatCache.CpuTimes, p.FillFromStatCache.CreateTime,
-				p.FillFromStatCache.RtPriority, p.FillFromStatCache.Nice, p.FillFromStatCache.Faults, nil
+			return p.FillFromStatCache.Terminal, p.FillFromStatCache.Ppid, p.FillFromStatCache.CpuTimes, p.FillFromStatCache.CreateTime, p.FillFromStatCache.RtPriority, p.FillFromStatCache.Nice, p.FillFromStatCache.Faults, nil
 		}
 		statPath = common.HostProcWithContext(ctx, strconv.Itoa(int(pid)), "stat")
 	} else {
