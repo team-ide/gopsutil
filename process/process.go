@@ -239,6 +239,7 @@ func (p *Process) Percent(interval time.Duration) (float64, error) {
 }
 
 func (p *Process) PercentWithContext(ctx context.Context, interval time.Duration) (float64, error) {
+	p.FillFromStatCache = nil
 	cpuTimes, err := p.TimesWithContext(ctx)
 	if err != nil {
 		return 0, err
@@ -251,6 +252,7 @@ func (p *Process) PercentWithContext(ctx context.Context, interval time.Duration
 		if err := common.Sleep(ctx, interval); err != nil {
 			return 0, err
 		}
+		p.FillFromStatCache = nil
 		cpuTimes, err = p.TimesWithContext(ctx)
 		now = time.Now()
 		if err != nil {
